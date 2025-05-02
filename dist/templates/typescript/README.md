@@ -1,6 +1,6 @@
 # Project Name
 
-A TypeScript project created with create-modern-node.
+A TypeScript project created with create-nodex.
 
 ## Getting Started
 

@@ -1,6 +1,6 @@
 # Project Name
 
-A JavaScript project created with create-modern-node.
+A JavaScript project created with create-nodex.
 
 ## Getting Started
 

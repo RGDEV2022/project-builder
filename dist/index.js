@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import inquirer from "inquirer";
 import fsExtra from "fs-extra";
-import { join, dirname } from "path";
+import { join, dirname, resolve } from "path";
 import { chdir } from "process";
 import { execSync } from "child_process";
 import { readFileSync, writeFileSync } from "fs";
@@ -37,12 +37,16 @@ const questions = [
 ];
 async function init() {
     const options = (await inquirer.prompt(questions));
-    // Create project directory
-    const templateDir = join(dirname(fileURLToPath(import.meta.url)), `templates/${options.useTypeScript ? "typescript" : "javascript"}`);
+    // Get current working directory before changing
+    const currentDir = process.cwd();
+    // Create project directory with absolute path
+    const targetDir = resolve(currentDir, options.projectName);
+    // Get template dir with absolute path from package location
+    const templateDir = join(__dirname, `templates/${options.useTypeScript ? "typescript" : "javascript"}`);
     // Ensure target directory exists
-    fsExtra.ensureDirSync(options.projectName);
+    fsExtra.ensureDirSync(targetDir);
     // Copy template files with filtering
-    fsExtra.copySync(templateDir, options.projectName, {
+    fsExtra.copySync(templateDir, targetDir, {
         filter: (src) => {
             // Don't copy index.js to TypeScript projects
             if (options.useTypeScript && src.endsWith("index.js")) {
@@ -56,8 +60,8 @@ async function init() {
         },
     });
     // Update package.json
-    chdir(options.projectName);
-    const pkgPath = join(process.cwd(), "package.json");
+    chdir(targetDir);
+    const pkgPath = join(targetDir, "package.json");
     const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
     pkg.name = options.projectName;
     pkg.scripts = {
@@ -65,7 +69,7 @@ async function init() {
             ? {
                 start: "node dist/index.js",
                 build: "tsc",
-                dev: "nodemon --exec ts-node src/index.ts",
+                dev: "nodemon",
             }
             : {
                 start: "node src/index.js",
@@ -73,11 +77,11 @@ async function init() {
             }),
         ...(options.addTesting && { test: "jest" }),
     };
-    writeFileSync("package.json", JSON.stringify(pkg, null, 2));
+    writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
     // Install dependencies
     const deps = [];
     if (options.useTypeScript) {
-        deps.push("typescript", "@types/node", "ts-node");
+        deps.push("typescript", "@types/node", "tsx");
     }
     if (options.hotReload) {
         deps.push("nodemon");
@@ -90,6 +94,23 @@ async function init() {
     }
     console.log("Installing dependencies...");
     execSync(`npm install --save-dev ${deps.join(" ")}`, { stdio: "inherit" });
+    // Create nodemon.json if hot reload is enabled
+    if (options.hotReload) {
+        const nodemonConfig = options.useTypeScript
+            ? {
+                watch: ["src"],
+                ext: "ts",
+                ignore: ["dist"],
+                exec: "npx tsx src/index.ts",
+            }
+            : {
+                watch: ["src"],
+                ext: "js",
+                ignore: ["node_modules"],
+                exec: "node src/index.js",
+            };
+        writeFileSync(join(targetDir, "nodemon.json"), JSON.stringify(nodemonConfig, null, 2));
+    }
     console.log(`\nProject ${options.projectName} created successfully!`);
     console.log(`\nTo get started:`);
     console.log(`  cd ${options.projectName}`);

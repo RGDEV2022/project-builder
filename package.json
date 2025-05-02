@@ -1,11 +1,11 @@
 {
-  "name": "create-modern-node",
+  "name": "create-nodex",
   "version": "1.0.0",
   "description": "CLI tool to create modern Node.js projects with TypeScript and more",
   "main": "dist/index.js",
   "type": "module",
   "bin": {
-    "create-modern-node": "./dist/index.js"
+    "create-nodex": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc && cp -R src/templates dist/",
@@ -21,11 +21,11 @@
     "template",
     "boilerplate"
   ],
-  "author": "openoceandev",
+  "author": "RGDEV2022",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openoceandev/create-modern-node"
+    "url": "https://github.com/RGDEV2022/project-builder"
   },
   "dependencies": {
     "chalk": "^5.4.1",

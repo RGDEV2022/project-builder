@@ -1,12 +1,12 @@
 {
   "name": "project-name",
   "version": "1.0.0",
-  "description": "JavaScript project created with create-modern-node",
+  "description": "JavaScript project created with create-nodex",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "dev": "nodemon",
     "test": "jest"
   },
   "keywords": [],

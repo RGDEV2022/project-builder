@@ -1,4 +1,4 @@
-# create-modern-node
+# create-nodex
 
 A CLI tool to create modern Node.js projects with TypeScript support.
 
@@ -15,19 +15,19 @@ A CLI tool to create modern Node.js projects with TypeScript support.
 Install globally:
 
 ```bash
-npm install -g create-modern-node
+npm install -g create-nodex
 ```
 
 Or use directly with npx:
 
 ```bash
-npx create-modern-node
+npx create-nodex
 ```
 
 ## Usage
 
 ```bash
-create-modern-node
+create-nodex
 ```
 
 Then follow the interactive prompts to configure your project:
@@ -40,7 +40,7 @@ Then follow the interactive prompts to configure your project:
 ## Example
 
 ```bash
-npx create-modern-node
+npx create-nodex
 # Answer the prompts
 cd my-project
 npm run dev
