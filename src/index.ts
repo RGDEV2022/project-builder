@@ -8,9 +8,19 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { Command } from "commander";
 import chalk from "chalk";
+// Use require for update-notifier to ensure compatibility and type resolution
+import updateNotifier from "update-notifier";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Read package.json for the notifier
+const pkg = JSON.parse(
+  readFileSync(join(__dirname, "..", "package.json"), "utf-8")
+);
+
+// Check for updates right after reading pkg
+updateNotifier({ pkg }).notify();
 
 const { copySync } = fsExtra;
 
