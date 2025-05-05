@@ -4,8 +4,10 @@ import fsExtra from "fs-extra";
 import { join, dirname, resolve } from "path";
 import { chdir } from "process";
 import { execSync } from "child_process";
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync, existsSync } from "fs";
 import { fileURLToPath } from "url";
+import { Command } from "commander";
+import chalk from "chalk";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -54,8 +56,17 @@ const questions: Question[] = [
   },
 ];
 
-async function init() {
-  const options = (await inquirer.prompt(questions as any)) as Options;
+async function init(options: Options) {
+  // Add signal handlers for graceful shutdown
+  process.on("SIGINT", () => {
+    console.log("\nExiting gracefully...");
+    process.exit(0);
+  });
+
+  process.on("SIGTERM", () => {
+    console.log("\nExiting gracefully...");
+    process.exit(0);
+  });
 
   // Get current working directory before changing
   const currentDir = process.cwd();
@@ -102,7 +113,7 @@ async function init() {
         }
       : {
           start: "node src/index.js",
-          dev: "nodemon src/index.js",
+          dev: "nodemon",
         }),
     ...(options.addTesting && { test: "jest" }),
   };
@@ -149,10 +160,216 @@ async function init() {
     );
   }
 
-  console.log(`\nProject ${options.projectName} created successfully!`);
-  console.log(`\nTo get started:`);
-  console.log(`  cd ${options.projectName}`);
-  console.log(`  npm run dev`);
+  console.log(
+    `\n${chalk.bgGreen.black(" SUCCESS ")} ${chalk.green.bold(
+      `Project ${options.projectName} created successfully`
+    )} ${chalk.green("🚀🚀🚀")}`
+  );
+  console.log(`\n${chalk.cyan.bold("To get started:")}`);
+  console.log(
+    `  ${chalk.yellow("cd")} ${chalk.yellow.bold(options.projectName)}`
+  );
+  console.log(`  ${chalk.yellow("npm run dev")}`);
 }
 
-init();
+// Function to add Express to an existing project
+async function addExpress() {
+  console.log(`${chalk.cyan.bold("Adding Express server to your project...")}`);
+
+  // Detect if we're in a create-nodex project
+  const currentDir = process.cwd();
+  const pkgPath = join(currentDir, "package.json");
+
+  if (!existsSync(pkgPath)) {
+    console.error(
+      `${chalk.bgRed.white(" ERROR ")} ${chalk.red(
+        "package.json not found. Make sure you're in a project directory."
+      )}`
+    );
+    process.exit(1);
+  }
+
+  // Check if we're in a TypeScript project
+  const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
+  const isTypeScript =
+    pkg.devDependencies &&
+    (pkg.devDependencies.typescript ||
+      (pkg.dependencies && pkg.dependencies.typescript));
+
+  console.log(
+    `${chalk.blue("Detected")} ${chalk.blue.bold(
+      isTypeScript ? "TypeScript" : "JavaScript"
+    )} ${chalk.blue("project.")}`
+  );
+
+  // Copy the appropriate Express template
+  const templatePath = join(
+    __dirname,
+    `templates/express/${isTypeScript ? "typescript" : "javascript"}/server.${
+      isTypeScript ? "ts" : "js"
+    }`
+  );
+
+  const targetPath = join(
+    currentDir,
+    "src",
+    `server.${isTypeScript ? "ts" : "js"}`
+  );
+
+  if (existsSync(targetPath)) {
+    const overwrite = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "overwrite",
+        message: `${chalk.yellow("⚠️")} server file already exists. Overwrite?`,
+        default: false,
+      },
+    ]);
+
+    if (!overwrite.overwrite) {
+      console.log(`${chalk.yellow("Express server installation cancelled.")}`);
+      return;
+    }
+  }
+
+  // Copy the server file
+  copySync(templatePath, targetPath);
+
+  // Update package.json with Express dependencies
+  const expressAdditionsPath = join(
+    __dirname,
+    "templates/express/package-additions.json"
+  );
+  const expressAdditions = JSON.parse(
+    readFileSync(expressAdditionsPath, "utf8")
+  );
+
+  // Merge dependencies
+  pkg.dependencies = {
+    ...(pkg.dependencies || {}),
+    ...(expressAdditions.dependencies || {}),
+  };
+
+  // Only add TypeScript-related devDependencies if it's a TypeScript project
+  if (isTypeScript) {
+    pkg.devDependencies = {
+      ...(pkg.devDependencies || {}),
+      ...(expressAdditions.devDependencies || {}),
+    };
+  }
+
+  // Merge scripts - adapt for TypeScript if needed
+  if (isTypeScript) {
+    pkg.scripts = {
+      ...(pkg.scripts || {}),
+      "start:server": "node dist/server.js",
+      "dev:server": "nodemon --exec tsx src/server.ts",
+    };
+  } else {
+    pkg.scripts = {
+      ...(pkg.scripts || {}),
+      "start:server": "node src/server.js",
+      "dev:server": "nodemon src/server.js",
+    };
+  }
+
+  // Save updated package.json
+  writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+
+  // Install dependencies
+  console.log(`\n${chalk.cyan("Installing Express dependencies...")}`);
+  execSync("npm install", { stdio: "inherit" });
+
+  console.log(
+    `\n${chalk.bgGreen.black(" SUCCESS ")} ${chalk.green.bold(
+      "Express server added successfully!"
+    )} ${chalk.green("🚀")}`
+  );
+  console.log(`\n${chalk.cyan.bold("To start the server:")}`);
+  console.log(`  ${chalk.yellow("npm run dev:server")}`);
+  console.log(`\n${chalk.cyan.bold("Available endpoints:")}`);
+  console.log(
+    `  ${chalk.green("GET")}  ${chalk.blue(
+      "http://localhost:3000/"
+    )} - ${chalk.gray("Welcome message")}`
+  );
+  console.log(
+    `  ${chalk.yellow("POST")} ${chalk.blue(
+      "http://localhost:3000/api/data"
+    )} - ${chalk.gray("Data endpoint")}`
+  );
+}
+
+// Set up command-line interface
+const program = new Command();
+program
+  .name("create-nodex")
+  .description("CLI tool to create modern Node.js projects with TypeScript")
+  .version("1.0.0");
+
+// Command to create a new project
+program
+  .command("create")
+  .argument("[project-name]", "Name of the project to create")
+  .description("Create a new Node.js project")
+  .action(async (projectName) => {
+    try {
+      // If projectName is provided as argument, use it, otherwise prompt for it
+      if (projectName) {
+        await init({
+          projectName,
+          useTypeScript: true,
+          hotReload: true,
+          addTesting: true,
+        });
+      } else {
+        const options = (await inquirer.prompt(questions as any)) as Options;
+        await init(options);
+      }
+    } catch (error: any) {
+      if (error.name === "ExitPromptError") {
+        console.log(
+          `\n${chalk.cyan("See you next time")} ${chalk.cyan.bold("👋")}`
+        );
+        process.exit(0);
+      }
+      console.error(`${chalk.bgRed.white(" ERROR ")} ${chalk.red(error)}`);
+      process.exit(1);
+    }
+  });
+
+// Command to add Express to an existing project
+program
+  .command("add")
+  .argument("<feature>", "Feature to add (e.g., express)")
+  .description("Add features to an existing project")
+  .action(async (feature) => {
+    try {
+      if (feature.toLowerCase() === "express") {
+        await addExpress();
+      } else {
+        console.error(
+          `${chalk.bgRed.white(" ERROR ")} ${chalk.red(
+            `Unknown feature '${feature}'. Available features: express`
+          )}`
+        );
+        process.exit(1);
+      }
+    } catch (error: any) {
+      if (error.name === "ExitPromptError") {
+        console.log(
+          `\n${chalk.cyan("See you next time")} ${chalk.cyan.bold("👋")}`
+        );
+        process.exit(0);
+      }
+      console.error(`${chalk.bgRed.white(" ERROR ")} ${chalk.red(error)}`);
+      process.exit(1);
+    }
+  });
+
+// When no command is specified, default to the create command
+if (process.argv.length <= 2) {
+  program.parse([...process.argv, "create"]);
+} else {
+  program.parse();
+}
