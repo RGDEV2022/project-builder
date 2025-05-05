@@ -214,27 +214,23 @@ const program = new Command();
 program
     .name("create-nodex")
     .description("CLI tool to create modern Node.js projects with TypeScript")
-    .version("1.0.0");
-// Command to create a new project
-program
-    .command("create")
+    .version(pkg.version)
     .argument("[project-name]", "Name of the project to create")
-    .description("Create a new Node.js project")
     .action(async (projectName) => {
     try {
-        // If projectName is provided as argument, use it, otherwise prompt for it
+        let options;
         if (projectName) {
-            await init({
+            options = {
                 projectName,
                 useTypeScript: true,
                 hotReload: true,
                 addTesting: true,
-            });
+            };
         }
         else {
-            const options = (await inquirer.prompt(questions));
-            await init(options);
+            options = (await inquirer.prompt(questions));
         }
+        await init(options);
     }
     catch (error) {
         if (error.name === "ExitPromptError") {
@@ -245,7 +241,6 @@ program
         process.exit(1);
     }
 });
-// Command to add Express to an existing project
 program
     .command("add")
     .argument("<feature>", "Feature to add (e.g., express)")
@@ -269,10 +264,4 @@ program
         process.exit(1);
     }
 });
-// When no command is specified, default to the create command
-if (process.argv.length <= 2) {
-    program.parse([...process.argv, "create"]);
-}
-else {
-    program.parse();
-}
+program.parse();
