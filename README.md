@@ -30,13 +30,12 @@ npx create-nodex
 ### Creating a new project
 
 ```bash
-create-nodex [project-name]
+create-nodex
 ```
-
-If `[project-name]` is omitted, you will be prompted to enter one.
 
 Then follow the interactive prompts to configure your project:
 
+- Project name
 - TypeScript or JavaScript
 - Hot reloading
 - Testing setup
