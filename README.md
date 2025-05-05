@@ -30,15 +30,15 @@ npx create-nodex
 ### Creating a new project
 
 ```bash
-create-nodex
+create-nodex [project-name]
 ```
 
-Then follow the interactive prompts to configure your project:
-
-- Project name
-- TypeScript or JavaScript
-- Hot reloading
-- Testing setup
+- If `[project-name]` is provided, the project will be created with default settings (TypeScript, Hot Reload, Testing).
+- If `[project-name]` is omitted, you will be prompted interactively to configure your project:
+  - Project name
+  - TypeScript or JavaScript
+  - Hot reloading
+  - Testing setup
 
 ### Adding features to an existing project
 
@@ -73,11 +73,27 @@ The server will be available at `http://localhost:3000`.
 
 ## Example
 
+**Interactive Setup:**
+
 ```bash
 # Create a new project interactively
 npx create-nodex
 # Answer the prompts (e.g., project name: my-express-app)
 cd my-express-app
+
+# Add Express
+create-nodex add express
+
+# Run the development server
+npm run dev:server
+```
+
+**Direct Setup with Default Options:**
+
+```bash
+# Create a new project directly with default options
+create-nodex my-ts-app
+cd my-ts-app
 
 # Add Express
 create-nodex add express
