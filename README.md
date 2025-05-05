@@ -9,6 +9,7 @@ A CLI tool to create modern Node.js projects with TypeScript support.
 - Jest testing integration
 - Modern ES modules
 - Clean project structure
+- Add features like Express easily
 
 ## Installation
 
@@ -26,24 +27,64 @@ npx create-nodex
 
 ## Usage
 
+### Creating a new project
+
 ```bash
-create-nodex
+create-nodex [project-name]
 ```
+
+If `[project-name]` is omitted, you will be prompted to enter one.
 
 Then follow the interactive prompts to configure your project:
 
-- Project name
 - TypeScript or JavaScript
 - Hot reloading
 - Testing setup
 
+### Adding features to an existing project
+
+Navigate to your project directory created with `create-nodex`:
+
+```bash
+cd my-project
+```
+
+Then, use the `add` command:
+
+**Add Express:**
+
+```bash
+create-nodex add express
+```
+
+This will:
+
+- Add `express` dependency.
+- Add a basic `src/server.ts` (or `src/server.js`) file with GET and POST examples.
+- Add `dev:server` and `start:server` scripts to your `package.json`.
+- Install the new dependencies.
+
+After adding Express, you can run the server with:
+
+```bash
+npm run dev:server
+```
+
+The server will be available at `http://localhost:3000`.
+
 ## Example
 
 ```bash
+# Create a new project interactively
 npx create-nodex
-# Answer the prompts
-cd my-project
-npm run dev
+# Answer the prompts (e.g., project name: my-express-app)
+cd my-express-app
+
+# Add Express
+create-nodex add express
+
+# Run the development server
+npm run dev:server
 ```
 
 ## Project Structure
@@ -53,8 +94,10 @@ The generated project will have the following structure:
 ```
 my-project/
 ├── src/
-│   └── index.ts (or index.js)
+│   ├── index.ts (or index.js)
+│   └── server.ts (if Express added)
 ├── package.json
+├── nodemon.json (if hot-reload enabled)
 ├── tsconfig.json (for TypeScript projects)
 ├── .gitignore
 └── README.md
