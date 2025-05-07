@@ -30,19 +30,29 @@
   "dependencies": {
     "chalk": "^5.4.1",
     "commander": "^11.1.0",
-    "express": "^5.1.0",
     "fs-extra": "^11.3.0",
     "inquirer": "^12.6.0",
     "update-notifier": "^7.3.1"
   },
   "devDependencies": {
-    "@types/express": "^5.0.1",
-    "@types/fs-extra": "^11.0.4",
-    "@types/node": "^22.15.3",
-    "@types/update-notifier": "^6.0.4",
-    "jest": "^29.7.0",
-    "nodemon": "^3.1.10",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "@langchain/anthropic": "latest",
+    "@langchain/community": "latest",
+    "@langchain/core": "latest",
+    "@langchain/google-genai": "latest",
+    "@langchain/google-vertexai": "latest",
+    "@langchain/groq": "latest",
+    "@langchain/mistralai": "latest",
+    "@langchain/openai": "latest",
+    "@types/dotenv": "latest",
+    "@types/express": "latest",
+    "express": "latest",
+    "@types/fs-extra": "latest",
+    "@types/node": "latest",
+    "@types/update-notifier": "latest",
+    "dotenv": "latest",
+    "jest": "latest",
+    "nodemon": "latest",
+    "ts-node": "latest",
+    "typescript": "latest"
   }
 }
