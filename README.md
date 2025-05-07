@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/banner.png" alt="create-nodex banner" width="500px"/>
+  <img src="assets/banner2.png" alt="create-nodex banner" width="500px"/>
 </div>
 
 > A powerful CLI tool for creating modern Node.js projects with TypeScript support and AI capabilities
