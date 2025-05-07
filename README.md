@@ -1,12 +1,9 @@
 <div align="center">
   <img src="https://ai-calls.vercel.app/banner.png" alt="create-nodex banner" width="500px"/>
+  <br/><br/>
 </div>
 
-> A powerful CLI tool for creating modern Node.js projects with TypeScript support and AI capabilities
-
-[![npm version](https://badge.fury.io/js/create-nodex.svg)](https://badge.fury.io/js/create-nodex)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![npm version](https://badge.fury.io/js/create-nodex.svg)](https://badge.fury.io/js/create-nodex) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 ## ✨ Features
 
