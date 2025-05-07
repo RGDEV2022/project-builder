@@ -1,7 +1,7 @@
 {
   "name": "create-nodex",
-  "version": "1.2.3",
-  "description": "CLI tool to create modern Node.js projects with TypeScript and more",
+  "version": "1.2.4",
+  "description": "CLI tool to create modern Node.js projects with TypeScript, AI capabilities, and more",
   "main": "dist/index.js",
   "type": "module",
   "bin": {
