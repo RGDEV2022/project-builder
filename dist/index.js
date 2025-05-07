@@ -13,6 +13,7 @@ import updateNotifier from "update-notifier";
 import { init, questions } from "./commands/init.js"; // .js extension for ESM
 import { addExpress } from "./commands/addExpress.js"; // .js extension for ESM
 import { addAi } from "./commands/addAi.js"; // .js extension for ESM for the new AI command
+import { addAiRag } from "./commands/addAiRag.js"; // .js extension for ESM for the new AI RAG command
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 // Read package.json for the notifier
@@ -58,7 +59,7 @@ program
 });
 program
     .command("add")
-    .argument("<feature>", "Feature to add (e.g., express, ai)")
+    .argument("<feature>", "Feature to add (e.g., express, ai, ai-rag)")
     .description("Add features to an existing project")
     .action(async (feature) => {
     try {
@@ -69,8 +70,11 @@ program
         else if (lowerFeature === "ai") {
             await addAi();
         }
+        else if (lowerFeature === "ai-rag") {
+            await addAiRag();
+        }
         else {
-            console.error(`${chalk.bgRed.white(" ERROR ")} ${chalk.red(`Unknown feature '${feature}'. Available features: express, ai`)}`);
+            console.error(`${chalk.bgRed.white(" ERROR ")} ${chalk.red(`Unknown feature '${feature}'. Available features: express, ai, ai-rag`)}`);
             process.exit(1);
         }
     }
